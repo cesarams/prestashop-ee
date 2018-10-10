@@ -35,9 +35,9 @@ var sepaCheck = false;
 
 $(document).ready(
     function () {
-        $(document).on('submit','#payment-form', function (e) {
+        $(document).on("submit","#payment-form", function (e) {
             form = $(this);
-            if (form.attr('action').search('sepadirectdebit') >= 0) {
+            if (form.attr("action").search("sepadirectdebit") >= 0) {
                 placeOrder(e);
             }
         });
@@ -49,9 +49,9 @@ $(document).ready(
                 e.preventDefault();
 
                 $.ajax({
-                    url: ajaxsepaurl.indexOf('?') ? ajaxsepaurl + '&action=sepamandate' : ajaxsepaurl + '?action=sepamandate',
+                    url: ajaxsepaurl.indexOf("?") ? ajaxsepaurl + "&action=sepamandate" : ajaxsepaurl + "?action=sepamandate",
                     type: "GET",
-                    dataType: 'json',
+                    dataType: "json",
                     success: function (response) {
                         displayPopup(response.html);
                     },
@@ -64,46 +64,46 @@ $(document).ready(
         
         function displayPopup(html)
         {
-            if (document.getElementById('sepaMandateModal')) {
+            if (document.getElementById("sepaMandateModal")) {
                 console.log("delete");
-                document.getElementById('sepaMandateModal').remove();
+                document.getElementById("sepaMandateModal").remove();
             }
 
-            $('body').append(html);
-            var sepaModal = $('#sepaMandateModal');
-            sepaModal.find('.first_last_name').text($('#sepaFirstName').val() + ' ' + $('#sepaLastName').val());
-            sepaModal.find('.bank_iban').text($('#sepaIban').val());
-            sepaModal.find('.bank_bic').text($('#sepaBic').val());
-            sepaModal.modal('show');
+            $("body").append(html);
+            var sepaModal = $("#sepaMandateModal");
+            sepaModal.find(".first_last_name").text($("#sepaFirstName").val() + " " + $("#sepaLastName").val());
+            sepaModal.find(".bank_iban").text($("#sepaIban").val());
+            sepaModal.find(".bank_bic").text($("#sepaBic").val());
+            sepaModal.modal("show");
 
-            var cancelButton = document.getElementById('sepaCancelButton');
-            cancelButton.addEventListener('click', close, false);
+            var cancelButton = document.getElementById("sepaCancelButton");
+            cancelButton.addEventListener("click", close, false);
 
-            var confirmButton = document.getElementById('sepaConfirmButton');
-            confirmButton.addEventListener('click', process_order, false);
+            var confirmButton = document.getElementById("sepaConfirmButton");
+            confirmButton.addEventListener("click", process_order, false);
 
-            var check_box = document.getElementById('sepaCheck');
-            check_box.addEventListener('change', check_change, false);
+            var check_box = document.getElementById("sepaCheck");
+            check_box.addEventListener("change", check_change, false);
         }
 
         function process_order()
         {
             sepaCheck = true;
-            $('#sepaFirstName').attr('type', 'hidden').appendTo(form);
-            $('#sepaLastName').attr('type', 'hidden').appendTo(form);
-            $('#sepaIban').attr('type', 'hidden').appendTo(form);
-            $('#sepaBic').attr('type', 'hidden').appendTo(form);
+            $("#sepaFirstName").attr("type", "hidden").appendTo(form);
+            $("#sepaLastName").attr("type", "hidden").appendTo(form);
+            $("#sepaIban").attr("type", "hidden").appendTo(form);
+            $("#sepaBic").attr("type", "hidden").appendTo(form);
             form.submit();
         }
 
         function check_change()
         {
-            $('#sepaConfirmButton').toggleClass('disabled');
+            $("#sepaConfirmButton").toggleClass("disabled");
         }
 
         function close()
         {
-            $("#sepaMandateModal").modal('hide');
+            $("#sepaMandateModal").modal("hide");
         }
     }
 );

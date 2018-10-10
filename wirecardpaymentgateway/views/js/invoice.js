@@ -32,10 +32,10 @@ var form = null;
 
 $(document).ready(
     function () {
-        $(document).on('submit','#payment-form', function (e) {
+        $(document).on("submit","#payment-form", function (e) {
             form = $(this);
-            if (form.attr('action').search('invoice') >= 0) {
-                $('#invoiceDeviceIdent').attr('type', 'hidden').appendTo(form);
+            if (form.attr("action").search("invoice") >= 0) {
+                $("#invoiceDeviceIdent").attr("type", "hidden").appendTo(form);
             }
         });
     }

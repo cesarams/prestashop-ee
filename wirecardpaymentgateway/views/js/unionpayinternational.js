@@ -33,25 +33,25 @@ var form = null;
 
 function processAjaxUrl(url, params)
 {
-    var querySign = '?';
+    var querySign = "?";
     if (url.includes("?")) {
-        querySign = '&';
+        querySign = "&";
     }
     params.forEach(function (param) {
-        url += querySign + param.index + '=' + param.data;
-        querySign = '&';
+        url += querySign + param.index + "=" + param.data;
+        querySign = "&";
     });
     return url;
 }
 
 $(document).ready(
     function () {
-        if ($('#payment-processing-gateway-upi-form').length > 0) {
+        if ($("#payment-processing-gateway-upi-form").length > 0) {
             getRequestData();
         }
-        $(document).on('submit','#payment-form', function (e) {
+        $(document).on("submit","#payment-form", function (e) {
             form = $(this);
-            if (form.attr('action').search('unionpayinternational') >= 0) {
+            if (form.attr("action").search("unionpayinternational") >= 0) {
                 placeOrder(e);
             }
         });
@@ -75,13 +75,13 @@ $(document).ready(
         function getRequestData()
         {
             var params = [{
-                index: 'action',
-                data: 'getupiconfig'
+                index: "action",
+                data: "getupiconfig"
             }];
             $.ajax({
                 url: processAjaxUrl(configProviderURL, params),
                 type: "GET",
-                dataType: 'json',
+                dataType: "json",
                 success: function (response) {
                     renderForm(JSON.parse(response));
                 },
@@ -114,11 +114,11 @@ $(document).ready(
         function formSubmitSuccessHandler(response)
         {
             token = response.token_id;
-            $('<input>').attr(
+            $("<input>").attr(
                 {
-                    type: 'hidden',
-                    name: 'tokenId',
-                    id: 'tokenId',
+                    type: "hidden",
+                    name: "tokenId",
+                    id: "tokenId",
                     value: token
                 }
             ).appendTo(form);
