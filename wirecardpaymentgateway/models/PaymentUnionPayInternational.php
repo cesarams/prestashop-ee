@@ -211,8 +211,13 @@ class PaymentUnionPayInternational extends Payment
         $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
-
-        return $transactionService->getDataForUpiUi($languageCode, new Amount(0, $currencyCode));
+        $creditCardConfig = $config->get(UpiTransaction::NAME);
+        $creditCard = new UpiTransaction();
+        $creditCard->setConfig($creditCardConfig);
+        $creditCard->setAmount(new Amount(0, $currencyCode));
+        $creditCard->setNotificationUrl(null);
+        $paymentAction = 'tokenize';
+        return $transactionService->getCreditCardUiWithData($creditCard, $paymentAction, $languageCode);
     }
 
     /**

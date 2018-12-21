@@ -269,8 +269,13 @@ class PaymentCreditCard extends Payment
         $currencyCode = $context->currency->iso_code;
         $config = $this->createPaymentConfig($module);
         $transactionService = new TransactionService($config);
-
-        return $transactionService->getDataForCreditCardUi($languageCode, new Amount(0, $currencyCode));
+        $creditCardConfig = $config->get(CreditCardTransaction::NAME);
+        $creditCard = new CreditCardTransaction();
+        $creditCard->setConfig($creditCardConfig);
+        $creditCard->setAmount(new Amount(0, $currencyCode));
+        $creditCard->setNotificationUrl(null);
+        $paymentAction = 'tokenize';
+        return $transactionService->getCreditCardUiWithData($creditCard, $paymentAction, $languageCode);
     }
 
     /**
