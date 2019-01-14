@@ -50,6 +50,12 @@ use WirecardEE\Prestashop\Helper\OrderManager;
 
 define('IS_CORE', false);
 
+//add language iso code when adding new translation file to plugin
+define('SUPPORTED_TRANSLATIONS', array('en', 'de', 'id', 'ja', 'ko', 'pl', 'tw', 'zh'));
+
+define('PAYMENT_GATEWAY_PLUGIN_VERSION', 'PAYMENT_GATEWAY_PLUGIN_VERSION');
+define('PAYMENT_GATEWAY_EXISTING_TRANSLATIONS', 'PAYMENT_GATEWAY_EXISTING_TRANSLATIONS');
+
 /**
  * Class WirecardPaymentGateway
  *
@@ -105,6 +111,8 @@ class WirecardPaymentGateway extends PaymentModule
 
         parent::__construct();
 
+        $this->checkTranslations();
+
         $this->displayName = $this->l('module_display_name');
         $this->description = $this->l('module_description');
         $this->confirmUninstall = $this->l('confirm_uninstall');
@@ -151,9 +159,12 @@ class WirecardPaymentGateway extends PaymentModule
      */
     public function uninstall()
     {
+        Configuration::deleteByName(PAYMENT_GATEWAY_PLUGIN_VERSION);
+        Configuration::deleteByName(PAYMENT_GATEWAY_EXISTING_TRANSLATIONS);
         if (!$this->deleteConfig()) {
             return false;
         }
+
         $this->uninstallTabs();
 
         if (!parent::uninstall()) {
@@ -1006,5 +1017,50 @@ class WirecardPaymentGateway extends PaymentModule
         } else {
             return $key;
         }
+    }
+
+    /**
+     * Check available translations and copy default translation for missing
+     *
+     * @since 1.3.4
+     */
+    private function checkTranslations()
+    {
+        $source_filename = dirname(__FILE__).'/translations/en.php';
+
+        if (Configuration::hasKey(PAYMENT_GATEWAY_EXISTING_TRANSLATIONS)) {
+            $existing_translations = unserialize(Configuration::get(PAYMENT_GATEWAY_EXISTING_TRANSLATIONS));
+        } else {
+            $existing_translations = SUPPORTED_TRANSLATIONS;
+        }
+
+        if (!Configuration::hasKey(PAYMENT_GATEWAY_PLUGIN_VERSION)
+            || Configuration::get(PAYMENT_GATEWAY_PLUGIN_VERSION) < $this->version) {
+            Configuration::updateValue(PAYMENT_GATEWAY_PLUGIN_VERSION, $this->version);
+
+            foreach (Language::getLanguages(false) as $lang) {
+                $lang_code = $lang['iso_code'];
+                if (!in_array($lang_code, SUPPORTED_TRANSLATIONS)) {
+                    $destination_filename = dirname(__FILE__).'/translations/'.$lang_code.'.php';
+                    copy($source_filename, $destination_filename);
+
+                    if (!in_array($lang_code, $existing_translations)) {
+                        array_push($existing_translations, $lang_code);
+                    }
+                }
+            }
+        } else {
+            foreach (Language::getLanguages(false) as $lang) {
+                $lang_code = $lang['iso_code'];
+                if (!in_array($lang_code, $existing_translations)) {
+                    $destination_filename = dirname(__FILE__).'/translations/'.$lang_code.'.php';
+                    copy($source_filename, $destination_filename);
+
+                    array_push($existing_translations, $lang_code);
+                }
+            }
+        }
+
+        Configuration::updateValue(PAYMENT_GATEWAY_EXISTING_TRANSLATIONS, serialize($existing_translations));
     }
 }

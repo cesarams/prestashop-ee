@@ -48,6 +48,11 @@ class Configuration
         self::$additional = $bool;
     }
 
+    public static function hasKey($param)
+    {
+        return false;
+    }
+
     public static function updateValue($param, $value)
     {
         return true;
